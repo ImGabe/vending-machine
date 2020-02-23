@@ -2,6 +2,7 @@ from pathlib import Path
 import os
 
 import discord
+from boto.s3.connection import S3Connection
 
 from app import client
 

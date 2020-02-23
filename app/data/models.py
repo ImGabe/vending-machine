@@ -2,7 +2,7 @@ from pathlib import Path
 import os
 
 import psycopg2
-
+from boto.s3.connection import S3Connection
 
 class SQLite:
     def __init__(self):
