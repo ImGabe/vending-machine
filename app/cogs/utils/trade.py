@@ -49,7 +49,7 @@ class Trade(commands.Cog):
             await ctx.send(coupon_verify[1])
             await ctx.author.send(coupon_verify[2])
         else:
-            await ctx.send(coupon_verify)
+            await ctx.send(coupon_verify[1])
 
 
 def setup(client):
