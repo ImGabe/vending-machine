@@ -9,8 +9,7 @@ class SQLite:
         pass
 
     def __enter__(self):
-        self.connection = psycopg2.connect(
-            f'dbname={os.environ["DB_NAME"]} user={os.environ["USER"]}')
+        self.connection = psycopg2.connect(os.environ["DATABASE_URL"])
         return self.connection.cursor()
 
     def __exit__(self, *args):
