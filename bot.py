@@ -1,17 +1,16 @@
 from pathlib import Path
-import configparser
-import json
+import os
 
 import discord
 
-from app import client, config
+from app import client
 
 
 @client.event
 async def on_ready():
     await client.change_presence(
-        status=config['CLIENT']['STATUS'],
-        activity=discord.Game(config['CLIENT']['ACTIVITY']))
+        status=os.environ['STATUS'],
+        activity=discord.Game(os.environ['ACTIVITY']))
 
     print('Up and running!')
 
@@ -35,5 +34,5 @@ def load_extensions(cogs: str) -> None:
 
 
 if __name__ == '__main__':
-    load_extensions(config['DEFAULT']['COG_DIR'])
-    client.run(config['CLIENT']['TOKEN'])
+    load_extensions(os.environ['COG_DIR'])
+    client.run(os.environ['TOKEN'])

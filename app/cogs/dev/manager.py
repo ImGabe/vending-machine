@@ -1,14 +1,15 @@
+import os
+
 import discord
 from discord.ext import commands
 
 from app.data.models import CouponModel, TxModel
-from app import config
 
 
 class Manager(commands.Cog):
     def __init__(self, client):
         self.client = client
-        self.manager = int(config['CLIENT']['MANAGER_ID'])
+        self.manager = int(os.environ['MANAGER_ID'])
 
     @commands.command()
     @commands.has_permissions(administrator=True)

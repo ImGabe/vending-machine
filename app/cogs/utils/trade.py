@@ -1,17 +1,19 @@
+import os
+
 import discord
 from discord.ext import commands
 
-from app import config
 from app.vending_machine import VendingMachine
 
 
 class Trade(commands.Cog):
     def __init__(self, client):
         self.client = client
+        self.color = int(os.environ['COLOR'])
 
     @commands.command()
     async def shop(self, ctx) -> None:
-        color = int(config['EMBED']['COLOR'])
+        color = self.color
         coupons = VendingMachine().view_showcase()
         embed = discord.Embed(
             title='Vending Machine',
@@ -28,7 +30,7 @@ class Trade(commands.Cog):
     async def coin(self, ctx, member: discord.Member = None) -> None:
         user = member.id if member else ctx.author.id
         balance = VendingMachine().user_balance(user)
-        color = int(config['EMBED']['COLOR'])
+        color = self.color
         embed = discord.Embed(
             title='Balance:',
             description=f'{balance} credits',

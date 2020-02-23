@@ -1,8 +1,7 @@
 from pathlib import Path
+import os
 
 import psycopg2
-
-from app import config
 
 
 class SQLite:
@@ -10,7 +9,8 @@ class SQLite:
         pass
 
     def __enter__(self):
-        self.connection = psycopg2.connect("dbname=gabedb user=gabe")
+        self.connection = psycopg2.connect(
+            f'dbname={os.environ["DB_NAME"]} user={os.environ["USER"]}')
         return self.connection.cursor()
 
     def __exit__(self, *args):
