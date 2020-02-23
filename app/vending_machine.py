@@ -38,10 +38,9 @@ class VendingMachine:
             [code, cost] = coupon
 
             if (balance - cost) >= 0:
-                self.tx.insert_model(user_id, cost, coupon_id)
-                self.coupon.delete_model(coupon_id)
-                return ('ok', 'Purchase approved.', code)
+                coupon_status = self.tx.insert_model(user_id, cost, coupon_id)
+                return (*coupon_status, code)
             else:
-                return 'Don\'t have enough money.'
+                return ('err', 'Don\'t have enough money.')
         except (ValueError, TypeError):
-            return 'This coupon doesn\'t exist.'
+            return ('err', 'This coupon doesn\'t exist.')

@@ -8,7 +8,7 @@ from app import config
 class Manager(commands.Cog):
     def __init__(self, client):
         self.client = client
-        self.manager = config['CLIENT']['MANAGER_ID']
+        self.manager = int(config['CLIENT']['MANAGER_ID'])
 
     @commands.command()
     @commands.has_permissions(administrator=True)
@@ -16,8 +16,7 @@ class Manager(commands.Cog):
         if ctx.author.id != self.manager:
             return
 
-        CouponModel().insert_model(description, code, cost)
-        await ctx.send('Ok!')
+        await ctx.send(CouponModel().insert_model(description, code, cost))
 
     @commands.command()
     @commands.has_permissions(administrator=True)
@@ -37,8 +36,7 @@ class Manager(commands.Cog):
             await ctx.send('You forgot the `<value>` argument.')
             return
 
-        TxModel().insert_model(member.id, value)
-        await ctx.send('Ok!')
+        await ctx.send(TxModel().insert_model(member.id, value)[1])
 
 
 def setup(client):

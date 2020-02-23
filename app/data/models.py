@@ -1,15 +1,16 @@
 from pathlib import Path
-import sqlite3
+
+import psycopg2
 
 from app import config
 
 
 class SQLite:
     def __init__(self):
-        self.path = Path(f'{config["DEFAULT"]["DB_PATH"]}/store.db')
+        pass
 
     def __enter__(self):
-        self.connection = sqlite3.connect(self.path)
+        self.connection = psycopg2.connect("dbname=gabedb user=gabe")
         return self.connection.cursor()
 
     def __exit__(self, *args):
@@ -30,16 +31,16 @@ class CouponModel:
             try:
                 cursor.execute('''
                     CREATE TABLE IF NOT exists coupon (
-                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        id SERIAL PRIMARY KEY,
                         description TEXT NOT NULL,
                         code TEXT NOT NULL,
                         cost INTEGER NOT NULL
                     )
                 ''')
-            except sqlite3.Error as error:
+            except Exception as error:
                 print('Models:', error)
 
-    def insert_model(self, description: str, code: str,  cost: int) -> None:
+    def insert_model(self, description: str, code: str,  cost: int) -> str:
         '''
         Insert a model.\n
         Params:
@@ -52,24 +53,12 @@ class CouponModel:
         '''
         with SQLite() as cursor:
             try:
-                cursor.execute('INSERT INTO coupon (description, code, cost) VALUES (?, ?, ?)',
+                cursor.execute('INSERT INTO coupon (description, code, cost) VALUES (%s, %s, %s)',
                                (description, code, cost))
-            except sqlite3.Error as error:
-                print('Models:', error)
-
-    def delete_model(self, coupon_id: int) -> None:
-        '''
-        Delete coupon.\n
-        Params:
-            coupon_id: int
-            Coupon id to delete.
-        '''
-        with SQLite() as cursor:
-            try:
-                cursor.execute('DELETE FROM coupon WHERE id = ?',
-                               (coupon_id, ))
-            except sqlite3.Error as error:
-                print('Models:', error)
+            except Exception as error:
+                return error
+            else:
+                return 'Ok!'
 
     def get_coupon(self, coupon_id: int) -> tuple:
         '''
@@ -81,11 +70,9 @@ class CouponModel:
         with SQLite() as cursor:
             try:
                 cursor.execute(
-                    'SELECT * FROM coupon WHERE id = ?', (coupon_id, ))
+                    'SELECT * FROM coupon WHERE id = %s', (coupon_id, ))
                 return cursor.fetchone()[2:4]
-            except sqlite3.Error as error:
-                return error
-            except TypeError as error:
+            except Exception as error:
                 print('Models:', error)
 
     def show_coupons(self) -> list:
@@ -94,8 +81,12 @@ class CouponModel:
         '''
         with SQLite() as cursor:
             try:
-                cursor.execute('SELECT id, description, cost FROM coupon')
-            except sqlite3.Error as error:
+                cursor.execute('''
+                    SELECT c.id, description, cost FROM coupon AS c
+                    LEFT JOIN tx AS t ON t.coupon_id = c.id
+                    WHERE t.coupon_id IS NULL
+                ''')
+            except Exception as error:
                 print('Models:', error)
             else:
                 return cursor.fetchall()
@@ -110,17 +101,17 @@ class TxModel():
             try:
                 cursor.execute('''
                     CREATE TABLE IF NOT EXISTS tx (
-                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        id SERIAL PRIMARY KEY,
                         user_id TEXT NOT NULL,
                         value INTEGER NOT NULL,
-                        coupon_id INTEGER,
+                        coupon_id INTEGER UNIQUE,
                         FOREIGN KEY (coupon_id) REFERENCES coupon(id)
                     );
                 ''')
-            except sqlite3.Error as error:
+            except Exception as error:
                 print('Models:', error)
 
-    def insert_model(self, user_id: str, value: int, coupon_id: int = None) -> None:
+    def insert_model(self, user_id: str, value: int, coupon_id: int = None) -> (str, str):
         '''
         Insert a model.\n
         Params:
@@ -135,10 +126,14 @@ class TxModel():
             try:
                 cursor.execute('''
                     INSERT INTO tx (user_id, value, coupon_id)
-                    VALUES (?, ?, ?);
+                    VALUES (%s, %s, %s);
                 ''', (user_id, value, coupon_id, ))
-            except sqlite3.Error as error:
-                print('Models:', error)
+            except psycopg2.IntegrityError as error:
+                return ('err', 'It has already been purchased.')
+            except Exception as error:
+                return ('err', error)
+            else:
+                return ('ok', 'Approved.')
 
     def view_balance(self, user_id: str) -> int:
         '''
@@ -146,19 +141,19 @@ class TxModel():
         Params:
             user_id: str
             User ID to check credits
-        '''        
+        '''
         with SQLite() as cursor:
             try:
                 cursor.execute('''
-                    SELECT user_id,
-                    SUM(CASE
-                        WHEN coupon_id THEN value * (-1)
-                        ELSE value
-                    END) AS Balance
-                    FROM tx
-                    WHERE user_id = ?
+                    SELECT SUM(
+                        CASE 
+                            WHEN coupon_id IS NOT NULL THEN value * (-1) 
+                            ELSE value 
+                        END) AS Balance 
+                        FROM tx 
+                        WHERE user_id = '%s'
                 ''', (user_id, ))
-            except sqlite3.Error as error:
+            except Exception as error:
                 print('Models:', error)
             else:
-                return cursor.fetchone()[1] or 0
+                return cursor.fetchone()[0] or 0
