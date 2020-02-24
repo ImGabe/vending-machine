@@ -23,7 +23,7 @@ class Trade(commands.Cog):
         )
 
         for coupon in coupons:
-            embed.add_field(name=f'{coupon[0]} - {coupon[1]}', value=coupon[2])
+            embed.add_field(name=f'{coupon[0]} - {coupon[1]}', value=f'{coupon[2]} ¢', inline=False)
 
         await ctx.send(embed=embed)
 
@@ -34,7 +34,7 @@ class Trade(commands.Cog):
         color = self.color
         embed = discord.Embed(
             title='Balance:',
-            description=f'{balance} credits',
+            description=f'{balance} ¢',
             color=discord.Color(color)
         )
 
