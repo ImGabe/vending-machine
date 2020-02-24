@@ -70,7 +70,7 @@ class CouponModel:
             try:
                 cursor.execute(
                     'SELECT * FROM coupon WHERE id = %s', (coupon_id, ))
-                return cursor.fetchone()[2:4]
+                return cursor.fetchone()[1:4]
             except Exception as error:
                 print('Models:', error)
 
