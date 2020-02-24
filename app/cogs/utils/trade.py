@@ -50,7 +50,7 @@ class Trade(commands.Cog):
 
         if coupon_verify[0] == "ok":
             await ctx.send(coupon_verify[1])
-            await ctx.author.send(coupon_verify[2])
+            await ctx.author.send(f'Obrigado por resgatar {coupon_verify[3]}, aqui está o seu código: {coupon_verify[2]}')
         else:
             await ctx.send(coupon_verify[1])
 
