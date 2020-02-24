@@ -90,6 +90,16 @@ class CouponModel:
             else:
                 return cursor.fetchall()
 
+    def reset(self) -> None:
+        '''
+        drop table coupon.
+        '''
+        with SQLite() as cursor:
+            try:
+                cursor.execute('DROP TABLE coupon')
+            except Exception as error:
+                print('Models:', error)
+
 
 class TxModel():
     def create_table(self) -> None:
@@ -156,3 +166,13 @@ class TxModel():
                 print('Models:', error)
             else:
                 return cursor.fetchone()[0] or 0
+
+    def reset(self) -> None:
+        '''
+        drop table tx.
+        '''
+        with SQLite() as cursor:
+            try:
+                cursor.execute('DROP TABLE tx')
+            except Exception as error:
+                print('Models:', error)

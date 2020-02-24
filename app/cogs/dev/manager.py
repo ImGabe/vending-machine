@@ -19,6 +19,15 @@ class Manager(commands.Cog):
             return
 
         await ctx.send(CouponModel().insert_model(description, code, cost))
+    
+    @commands.command()
+    @commands.has_permissions(administrator=True)
+    async def reset(self, ctx) -> None:
+        if ctx.author.id != self.manager:
+            return
+
+        TxModel().reset()
+        CouponModel().reset()
 
     @commands.command()
     @commands.has_permissions(administrator=True)
