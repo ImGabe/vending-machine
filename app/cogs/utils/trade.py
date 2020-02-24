@@ -18,7 +18,7 @@ class Trade(commands.Cog):
         coupons = VendingMachine().view_showcase()
         embed = discord.Embed(
             title='Vending Machine',
-            description='Available coupons',
+            description='To buy the coupons type: `;claim <id>`\nAvailable coupons',
             color=discord.Color(color)
         )
 
