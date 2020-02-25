@@ -12,11 +12,12 @@ class Manager(commands.Cog):
         self.client = client
         self.manager = int(os.environ['MANAGER_ID'])
         self.helper = int(os.environ['HELPER_ID']) or None
+        self.staff = [self.manager, self.helper]
 
     @commands.command()
     @commands.has_permissions(administrator=True)
     async def insert_coupon(self, ctx, description: str, code: str, cost: int) -> None:
-        if ctx.author.id != self.manager or ctx.author.id != self.helper:
+        if not ctx.author.id in self.staff:
             return
 
         await ctx.send(CouponModel().insert_model(description, code, cost))
@@ -33,7 +34,7 @@ class Manager(commands.Cog):
     @commands.command()
     @commands.has_permissions(administrator=True)
     async def reward(self, ctx,  member: discord.Member = None, value: int = None) -> None:
-        if ctx.author.id != self.manager or ctx.author.id != self.helper:
+        if not ctx.author.id in self.staff:
             return
 
         if not member:
