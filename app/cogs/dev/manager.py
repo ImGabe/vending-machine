@@ -15,9 +15,6 @@ class Manager(commands.Cog):
     @commands.command()
     @commands.has_permissions(administrator=True)
     async def insert_coupon(self, ctx, description: str, code: str, cost: int) -> None:
-        if ctx.author.id != self.manager:
-            return
-
         await ctx.send(CouponModel().insert_model(description, code, cost))
     
     @commands.command()
@@ -37,10 +34,6 @@ class Manager(commands.Cog):
 
         if not member:
             await ctx.send('You forgot the `<member>` argument.')
-            return
-
-        if not isinstance(member, discord.Member):
-            await ctx.send('Couldn\'t find the user.')
             return
 
         if not value:
