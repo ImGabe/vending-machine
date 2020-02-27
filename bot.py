@@ -5,6 +5,7 @@ import discord
 from boto.s3.connection import S3Connection
 
 from app import client
+from app.cogs.dev.manager import Manager
 
 
 @client.event
@@ -14,6 +15,15 @@ async def on_ready():
         activity=discord.Game(os.environ['ACTIVITY']))
 
     print('Up and running!')
+
+
+@client.event
+async def on_message(message):
+    if message.author.id == 159985870458322944:
+        [command, _user, value] = message.content.split(' ')
+
+        if command == ';reward':
+            Manager().reward(message.mentions[0].id, value)
 
 
 def load_extensions(cogs: str) -> None:
