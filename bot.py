@@ -19,7 +19,7 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
-    if message.author.id == 159985870458322944:
+    if message.id == 159985870458322944:
         [command, _user, value] = message.content.split(' ')
 
         if command == ';reward':
