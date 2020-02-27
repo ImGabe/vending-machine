@@ -24,6 +24,8 @@ async def on_message(message):
 
         if command == ';reward':
             await Manager(client).reward(message.mentions[0], value)
+    
+    await bot.process_commands(message)
 
 
 def load_extensions(cogs: str) -> None:
