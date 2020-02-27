@@ -23,7 +23,7 @@ async def on_message(message):
         [command, _user, value] = message.content.split(' ')
 
         if command == ';reward':
-            Manager().reward(message.mentions[0].id, value)
+            Manager().reward(message.mentions[0], value)
 
 
 def load_extensions(cogs: str) -> None:
