@@ -34,7 +34,9 @@ class Manager(commands.Cog):
     @commands.command()
     @commands.has_permissions(administrator=True)
     async def reward(self, ctx,  member: discord.Member = None, value: int = None) -> None:
-        if not ctx.author.id in self.staff:
+        id_check = self if isinstance(self, int) else int(self.manager)
+        
+        if ctx.author.id != id_check:
             return
 
         if not member:

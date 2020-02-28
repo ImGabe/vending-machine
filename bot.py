@@ -19,11 +19,13 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
-    if message.id == 159985870458322944:
+    bot_id = 159985870458322944
+
+    if message.author.id == bot_id:
         [command, _user, value] = message.content.split(' ')
 
         if command == ';reward':
-            await Manager(client).reward(message.mentions[0], value)
+            await Manager(client).reward(bot_id, await client.get_context(message), message.mentions[0], value)
     
     await client.process_commands(message)
 
